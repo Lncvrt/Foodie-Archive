@@ -7,7 +7,7 @@ We use Nuitka to compile the executable
 
 Here is the command we use:
 ```
-python3 -m nuitka --onefile --standalone --windows-icon-from-ico=foodie-dash.ico --windows-console-mode=disable compiled_client.py
+python3 -m nuitka --onefile --standalone --windows-icon-from-ico=foodie-dash.ico --windows-console-mode=disable --enable-plugin=tk-inter  --output-filename=Foodie-Dash compiled_client.py
 ```
 
 ## Files
