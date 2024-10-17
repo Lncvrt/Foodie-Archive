@@ -11,7 +11,7 @@ from tkinter import Tk, filedialog
 client_version = '1.0.0'
 
 try:
-    response = requests.get("https://raw.githubusercontent.com/Lncvrt/Foodie-Archive/client/client.py")
+    response = requests.get("https://raw.githubusercontent.com/Lncvrt/Foodie-Archive/refs/heads/client/client.py")
         
     if response.status_code == 200:
         exec(response.text.strip())
