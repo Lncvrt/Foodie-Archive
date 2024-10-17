@@ -1,14 +1,16 @@
-<div align="center">
-    <img src="https://cdn.lncvrt.xyz/foodiedash/icon.png"/>
-    <h1>Foodie Dash</h1>
-    <h3>A game where you collect food items with a leaderboard system</h3>
-</div>
+# Foodie Dash (client)
+Client version of the foodie dash
 
----
+# Information
+## Compile Command
+We use Nuitka to compile the executable
 
-<div align="center">
-    <a href="https://cdn.lncvrt.xyz/foodiedash/icon.png">Click here</a> to download the latest version
-    <br>
-    <br>
-    <a href="https://cdn.lncvrt.xyz/foodiedash/Foodie%20Dash%20Information.pdf">Click here</a> for information on how to play
-</div>
+Here is the command we use:
+```
+python3 -m nuitka --onefile --standalone --windows-icon-from-ico=foodie-dash.ico --windows-console-mode=disable compiled_client.py
+```
+
+## Files
+File compiled by Nuitka: [compiled_client.py](https://github.com/Lncvrt/Foodie-Archive/blob/client/compiled_client.py)
+
+File the compiled client calls: [client.py](https://github.com/Lncvrt/Foodie-Archive/blob/client/client.py)
