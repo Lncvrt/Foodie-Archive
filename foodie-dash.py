@@ -93,6 +93,8 @@ pygame.mixer.music.play(loops=-1)
 death_sound_channel = pygame.mixer.Channel(1)
 eat_sound_channel = pygame.mixer.Channel(2)
 
+flipped = False
+
 def should_change_color():
     global auto_color_change_timer
     current_time = pygame.time.get_ticks()
@@ -137,7 +139,7 @@ def check_collision():
     return False
 
 def game_loop():
-    global score, player_x, food_x, food_y, draw_hitboxes, auto_mode, auto_key
+    global score, player_x, food_x, food_y, draw_hitboxes, auto_mode, auto_key, player_image, flipped
 
     dt = clock.tick(60) / 1000.0
 
@@ -173,8 +175,14 @@ def game_loop():
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] or keys[pygame.K_a] and player_x > 0:
                 player_x -= player_speed * dt
+                if not flipped:
+                    player_image = pygame.transform.flip(player_image, True, False)
+                    flipped = True
             if keys[pygame.K_RIGHT] or keys[pygame.K_d] and player_x < WIDTH - player_width:
                 player_x += player_speed * dt
+                if flipped:
+                    player_image = pygame.transform.flip(player_image, True, False)
+                    flipped = False
 
         if player_x < 0:
                 player_x = 0
@@ -187,8 +195,14 @@ def game_loop():
             if abs(player_x - food_x) > player_speed * dt:
                 if player_x < food_x:
                     player_x += player_speed * dt
+                    if flipped:
+                        player_image = pygame.transform.flip(player_image, True, False)
+                        flipped = False
                 else:
                     player_x -= player_speed * dt
+                    if not flipped:
+                        player_image = pygame.transform.flip(player_image, True, False)
+                        flipped = True
 
         if food_y >= player_y:
             if check_collision():
@@ -203,6 +217,9 @@ def game_loop():
                 player_x = (WIDTH - player_width) // 2
                 food_x = random.randint(0, WIDTH - food_width)
                 food_y = 0
+                if flipped:
+                    player_image = pygame.transform.flip(player_image, True, False)
+                    flipped = False
 
         COLORraw_window()
 
