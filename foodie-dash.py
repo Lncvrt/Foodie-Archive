@@ -55,6 +55,9 @@ pygame.display.set_icon(icon_image)
 player_image = pygame.transform.scale(icon_image.convert_alpha(), (player_width, player_height))
 food_image = pygame.transform.scale(pygame.image.load(berry_path).convert_alpha(), (food_width, food_height))
 
+death_sound = pygame.mixer.Sound(death_path)
+eat_sound = pygame.mixer.Sound(eat_path)
+
 player_x, player_y = (WIDTH - player_width) // 2, HEIGHT - player_height
 food_x, food_y = random.randint(0, WIDTH - food_width), 0
 
@@ -123,7 +126,7 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 try:
-                    shutil.rmtree(f"{os.path.dirname(os.path.abspath(__file__))}\\data")
+                    shutil.rmtree(f"{os.path.dirname(os.path.abspath(__file__))}/data")
                 except FileNotFoundError:
                     pass
                 pygame.quit()
@@ -189,12 +192,12 @@ def handle_collision():
     global score, food_x, food_y
     if not auto_mode:
         score += 1
-        pygame.mixer.Sound(eat_path).play().set_volume(0.15)
+        eat_sound.set_volume(0.15)
     food_x, food_y = random.randint(0, WIDTH - food_width), 0
 
 def handle_death():
     global score, player_x, food_x, food_y, flipped, player_image
-    pygame.mixer.Sound(death_path).play().set_volume(0.4)
+    death_sound.play().set_volume(0.4)
     score = 1
     player_x = (WIDTH - player_width) // 2
     food_x, food_y = random.randint(0, WIDTH - food_width), 0
