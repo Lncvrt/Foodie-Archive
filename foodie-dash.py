@@ -20,11 +20,7 @@ eat_path = f"{resources_folder}/eat_{version_num}.mp3"
 music_path = f"{resources_folder}/music_{version_num}.mp3"
 font_path = f"{resources_folder}/font_{version_num}.ttf"
 
-if not os.path.exists(app_folder):
-    os.mkdir(app_folder)
-
-if not os.path.exists(resources_folder):
-    os.mkdir(resources_folder)
+os.makedirs(resources_folder, exist_ok=True)
 
 resources = {
     icon_path: "https://cdn.lncvrt.xyz/foodiedash/icon.png",
@@ -78,9 +74,8 @@ gradient_progress = 0.0
 
 def should_change_color():
     global auto_color_change_timer
-    current_time = pygame.time.get_ticks()
-    if current_time - auto_color_change_timer >= auto_color_change_interval:
-        auto_color_change_timer = current_time
+    if pygame.time.get_ticks() - auto_color_change_timer >= auto_color_change_interval:
+        auto_color_change_timer = pygame.time.get_ticks()
         return True
     return False
 
@@ -99,7 +94,7 @@ def COLORraw_window():
     window.blit(food_image, (food_x, food_y))
 
     if score != "Auto":
-        score_text = font.render("Score: " + str(score), True, COLOR)
+        score_text = font.render(f"Score: {score}", True, COLOR)
     else:
         if gradient_progress < 0.333:
             red, green, blue = lerp(255, 0, gradient_progress * 3), lerp(0, 255, gradient_progress * 3), 0
@@ -108,10 +103,7 @@ def COLORraw_window():
         else:
             red, green, blue = lerp(0, 255, (gradient_progress - 0.666) * 3), 0, lerp(255, 0, (gradient_progress - 0.666) * 3)
 
-        gradient_progress += 0.00025
-        if gradient_progress >= 1.0:
-            gradient_progress = 0.0
-
+        gradient_progress = (gradient_progress + 0.00025) % 1.0
         score_text = font.render("Auto Mode", True, (red, green, blue))
 
     score_rect = score_text.get_rect(center=(WIDTH // 2, 50))
@@ -120,10 +112,7 @@ def COLORraw_window():
     pygame.display.update()
 
 def check_collision():
-    player_hitbox = pygame.Rect(player_x, player_y, player_hitbox_width, player_hitbox_height)
-    food_hitbox = pygame.Rect(food_x, food_y, food_hitbox_width, food_hitbox_height)
-
-    return player_hitbox.colliderect(food_hitbox)
+    return pygame.Rect(player_x, player_y, player_hitbox_width, player_hitbox_height).colliderect(pygame.Rect(food_x, food_y, food_hitbox_width, food_hitbox_height))
 
 def game_loop():
     global score, player_x, food_x, food_y, draw_hitboxes, auto_mode, player_image, flipped
@@ -144,68 +133,74 @@ def game_loop():
                     draw_hitboxes = not draw_hitboxes
                 elif event.key == pygame.K_j:
                     if not auto_mode:
-                        player_x = (WIDTH - player_width) // 2
-                        food_x = random.randint(0, WIDTH - food_width)
-                        food_y = 0
-                        score = "Auto"
-                        auto_mode = True
+                        reset_game_state("Auto")
                     else:
-                        score = 1
-                        player_x = (WIDTH - player_width) // 2
-                        food_x = random.randint(0, WIDTH - food_width)
-                        food_y = 0
-                        if flipped:
-                            player_image = pygame.transform.flip(player_image, True, False)
-                            flipped = False
-                        auto_mode = False
+                        reset_game_state()
 
         if not auto_mode:
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] or keys[pygame.K_a] and player_x > 0:
-                player_x -= player_speed * dt
-                if not flipped:
-                    player_image = pygame.transform.flip(player_image, True, False)
-                    flipped = True
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d] and player_x < WIDTH - player_width:
-                player_x += player_speed * dt
-                if flipped:
-                    player_image = pygame.transform.flip(player_image, True, False)
-                    flipped = False
-
-        player_x = max(0, min(player_x, WIDTH - player_width))
+            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_x > 0:
+                move_player(-player_speed * dt)
+            if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_x < WIDTH - player_width:
+                move_player(player_speed * dt)
 
         food_y += food_speed * dt
         if auto_mode:
-            if abs(player_x - food_x) > player_speed * dt:
-                if player_x < food_x:
-                    player_x += player_speed * dt
-                    if flipped:
-                        player_image = pygame.transform.flip(player_image, True, False)
-                        flipped = False
-                else:
-                    player_x -= player_speed * dt
-                    if not flipped:
-                        player_image = pygame.transform.flip(player_image, True, False)
-                        flipped = True
+            auto_move_player(dt)
 
         if food_y >= player_y:
             if check_collision():
-                if not auto_mode:
-                    score += 1
-                    pygame.mixer.Sound(eat_path).play().set_volume(0.15)
-                food_x = random.randint(0, WIDTH - food_width)
-                food_y = 0
+                handle_collision()
             else:
-                pygame.mixer.Sound(death_path).play().set_volume(0.4)
-                score = 1
-                player_x = (WIDTH - player_width) // 2
-                food_x = random.randint(0, WIDTH - food_width)
-                food_y = 0
-                if flipped:
-                    player_image = pygame.transform.flip(player_image, True, False)
-                    flipped = False
+                handle_death()
 
         COLORraw_window()
+
+def reset_game_state(mode="Normal"):
+    global score, player_x, food_x, food_y, auto_mode, flipped, player_image
+    score = 1 if mode == "Normal" else "Auto"
+    player_x = (WIDTH - player_width) // 2
+    food_x = random.randint(0, WIDTH - food_width)
+    food_y = 0
+    auto_mode = mode == "Auto"
+    if flipped:
+        player_image = pygame.transform.flip(player_image, True, False)
+        flipped = False
+
+def move_player(delta_x):
+    global player_x, flipped, player_image
+    player_x += delta_x
+    if delta_x < 0 and not flipped:
+        player_image = pygame.transform.flip(player_image, True, False)
+        flipped = True
+    elif delta_x > 0 and flipped:
+        player_image = pygame.transform.flip(player_image, True, False)
+        flipped = False
+
+def auto_move_player(dt):
+    global player_x, flipped, player_image
+    if abs(player_x - food_x) > player_speed:
+        if player_x < food_x:
+            move_player(player_speed * dt)
+        else:
+            move_player(-player_speed * dt)
+
+def handle_collision():
+    global score, food_x, food_y
+    if not auto_mode:
+        score += 1
+        pygame.mixer.Sound(eat_path).play().set_volume(0.15)
+    food_x, food_y = random.randint(0, WIDTH - food_width), 0
+
+def handle_death():
+    global score, player_x, food_x, food_y, flipped, player_image
+    pygame.mixer.Sound(death_path).play().set_volume(0.4)
+    score = 1
+    player_x = (WIDTH - player_width) // 2
+    food_x, food_y = random.randint(0, WIDTH - food_width), 0
+    if flipped:
+        player_image = pygame.transform.flip(player_image, True, False)
+        flipped = False
 
 if __name__ == "__main__":
     game_loop()
