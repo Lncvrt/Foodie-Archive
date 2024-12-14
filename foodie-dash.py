@@ -10,12 +10,12 @@ version_num = 1
 app_folder = os.path.join(os.environ['APPDATA'].replace("\\", "/"), "Foodie Dash")
 resources_folder = os.path.join(app_folder, "Resources")
 
-icon_path = f"{resources_folder}/icon.png"
-berry_path = f"{resources_folder}/berry.png"
-death_path = f"{resources_folder}/death.mp3"
-eat_path = f"{resources_folder}/eat.mp3"
-music_path = f"{resources_folder}/music.mp3"
-font_path = f"{resources_folder}/font.ttf"
+icon_path = f"{resources_folder}/icon_{version_num}.png"
+berry_path = f"{resources_folder}/berry_{version_num}.png"
+death_path = f"{resources_folder}/death_{version_num}.mp3"
+eat_path = f"{resources_folder}/eat_{version_num}.mp3"
+music_path = f"{resources_folder}/music_{version_num}.mp3"
+font_path = f"{resources_folder}/font_{version_num}.ttf"
 
 if not os.path.exists(app_folder):
     os.mkdir(app_folder)
