@@ -74,6 +74,14 @@ flipped = False
 
 gradient_progress = 0.0
 
+joystick_count = pygame.joystick.get_count()
+controller = None
+if joystick_count > 0:
+    controller = pygame.joystick.Joystick(0)
+    controller.init()
+else:
+    print("No joystick detected")
+
 def should_change_color():
     global auto_color_change_timer
     if pygame.time.get_ticks() - auto_color_change_timer >= auto_color_change_interval:
@@ -138,9 +146,15 @@ def game_loop():
 
         if not auto_mode:
             keys = pygame.key.get_pressed()
-            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and player_x > 0:
+            
+            controller_axis_value = 0
+            if controller:
+                controller_axis_value = controller.get_axis(0)
+
+            if (keys[pygame.K_LEFT] or keys[pygame.K_a] or controller_axis_value < -0.1) and player_x > 0:
                 move_player(-player_speed * dt)
-            if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and player_x < WIDTH - player_width:
+            
+            if (keys[pygame.K_RIGHT] or keys[pygame.K_d] or controller_axis_value > 0.1) and player_x < WIDTH - player_width:
                 move_player(player_speed * dt)
 
         food_y += food_speed * dt
