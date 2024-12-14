@@ -134,7 +134,7 @@ def COLORraw_window():
     window.blit(food_image, (food_x, food_y))
 
     if score != "Auto":
-        score_text = font.render("Points: " + str(score), True, COLOR)
+        score_text = font.render("Score: " + str(score), True, COLOR)
     else:
         if gradient_progress < 0.333:
             red = lerp(255, 0, gradient_progress * 3)
