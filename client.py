@@ -2,7 +2,6 @@ import requests
 import os
 import pygame
 import random
-import shutil
 from sys import exit
 
 from tkinter import messagebox
