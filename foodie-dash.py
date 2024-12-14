@@ -196,6 +196,9 @@ def game_loop():
                         player_x = (WIDTH - player_width) // 2
                         food_x = random.randint(0, WIDTH - food_width)
                         food_y = 0
+                        if flipped:
+                            player_image = pygame.transform.flip(player_image, True, False)
+                            flipped = False
                         auto_mode = False
 
         if not auto_mode:
