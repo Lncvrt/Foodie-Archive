@@ -1,13 +1,16 @@
 import requests
 import os
-import pygame
 import random
 import shutil
 from sys import exit
 
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
+import pygame
+
 version_num = 1
 
-app_folder = os.path.join(os.environ['APPDATA'].replace("\\", "/"), "Foodie Dash")
+app_folder = os.path.join(os.environ['APPDATA'], "Foodie Dash")
 resources_folder = os.path.join(app_folder, "Resources")
 
 icon_path = f"{resources_folder}/icon_{version_num}.png"
@@ -57,11 +60,11 @@ COLOR = (141, 103, 216)
 
 player_width = 128
 player_height = 128
-player_speed = 30
+player_speed = 15
 
 food_width = 128
 food_height = 128
-food_speed = 15
+food_speed = 8
 
 player_hitbox_width = 128
 player_hitbox_height = 128
@@ -105,6 +108,8 @@ eat_sound_channel = pygame.mixer.Channel(2)
 
 flipped = False
 
+gradient_progress = 0.0
+
 def should_change_color():
     global auto_color_change_timer
     current_time = pygame.time.get_ticks()
@@ -113,8 +118,11 @@ def should_change_color():
         return True
     return False
 
+def lerp(start, end, t):
+    return int(start + (end - start) * t)
+
 def COLORraw_window():
-    global red, green, blue
+    global red, green, blue, gradient_progress
 
     window.fill((30, 30, 30))
 
@@ -128,17 +136,29 @@ def COLORraw_window():
     if score != "Auto":
         score_text = font.render("Points: " + str(score), True, COLOR)
     else:
-        if should_change_color():
-            red = random.randint(0, 255)
-            green = random.randint(0, 255)
-            blue = random.randint(0, 255)
+        if gradient_progress < 0.333:
+            red = lerp(255, 0, gradient_progress * 3)
+            green = lerp(0, 255, gradient_progress * 3)
+            blue = 0
+        elif gradient_progress < 0.666:
+            red = 0
+            green = lerp(255, 0, (gradient_progress - 0.333) * 3)
+            blue = lerp(0, 255, (gradient_progress - 0.333) * 3)
+        else:
+            red = lerp(0, 255, (gradient_progress - 0.666) * 3)
+            green = 0
+            blue = lerp(255, 0, (gradient_progress - 0.666) * 3)
+
+        gradient_progress += 0.00025
+        if gradient_progress >= 1.0:
+            gradient_progress = 0.0
 
         score_text = font.render("Auto Mode", True, (red, green, blue))
+    
     score_rect = score_text.get_rect(center=(WIDTH // 2, 50))
     window.blit(score_text, score_rect)
 
     pygame.display.update()
-
 
 def check_collision():
     player_hitbox = pygame.Rect(player_x, player_y, player_hitbox_width, player_hitbox_height)
