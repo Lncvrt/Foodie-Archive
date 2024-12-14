@@ -1,7 +1,6 @@
 import requests
 import os
 import random
-import shutil
 from sys import exit
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
@@ -125,10 +124,6 @@ def game_loop():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                try:
-                    shutil.rmtree(f"{os.path.dirname(os.path.abspath(__file__))}/data")
-                except FileNotFoundError:
-                    pass
                 pygame.quit()
                 exit()
             elif event.type == pygame.KEYDOWN:
