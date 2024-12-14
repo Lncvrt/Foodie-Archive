@@ -92,7 +92,6 @@ food_y = 0
 score = 1
 draw_hitboxes = False
 auto_mode = False
-auto_key = 0
 
 auto_color_change_interval = 100
 auto_color_change_timer = pygame.time.get_ticks()
@@ -169,7 +168,7 @@ def check_collision():
     return False
 
 def game_loop():
-    global score, player_x, food_x, food_y, draw_hitboxes, auto_mode, auto_key, player_image, flipped
+    global score, player_x, food_x, food_y, draw_hitboxes, auto_mode, player_image, flipped
 
     dt = clock.tick(60) / 1000.0
 
@@ -186,20 +185,18 @@ def game_loop():
                 if event.key == pygame.K_h:
                     draw_hitboxes = not draw_hitboxes
                 elif event.key == pygame.K_j:
-                    auto_key += 1
-                    if auto_key == 3:
+                    if not auto_mode:
                         player_x = (WIDTH - player_width) // 2
                         food_x = random.randint(0, WIDTH - food_width)
                         food_y = 0
                         score = "Auto"
                         auto_mode = True
-                    elif auto_key == 4:
+                    else:
                         score = 1
                         player_x = (WIDTH - player_width) // 2
                         food_x = random.randint(0, WIDTH - food_width)
                         food_y = 0
                         auto_mode = False
-                        auto_key = 0
 
         if not auto_mode:
             keys = pygame.key.get_pressed()
