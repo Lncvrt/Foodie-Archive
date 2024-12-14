@@ -61,7 +61,7 @@ eat_sound = pygame.mixer.Sound(eat_path)
 player_x, player_y = (WIDTH - player_width) // 2, HEIGHT - player_height
 food_x, food_y = random.randint(0, WIDTH - food_width), 0
 
-score, draw_hitboxes, auto_mode = 1, False, False
+score, draw_hitboxes, auto_mode, auto_key = 1, False, False, 0
 auto_color_change_interval, auto_color_change_timer = 100, pygame.time.get_ticks()
 
 font = pygame.font.Font(font_path, 36)
@@ -118,7 +118,7 @@ def check_collision():
     return pygame.Rect(player_x, player_y, player_hitbox_width, player_hitbox_height).colliderect(pygame.Rect(food_x, food_y, food_hitbox_width, food_hitbox_height))
 
 def game_loop():
-    global score, player_x, food_x, food_y, draw_hitboxes, auto_mode, player_image, flipped
+    global score, player_x, food_x, food_y, draw_hitboxes, auto_mode, auto_key, player_image, flipped
 
     dt = clock.tick(60) / 1000.0
 
@@ -135,9 +135,10 @@ def game_loop():
                 if event.key == pygame.K_h:
                     draw_hitboxes = not draw_hitboxes
                 elif event.key == pygame.K_j:
-                    if not auto_mode:
+                    auto_key += 1
+                    if auto_key == 3:
                         reset_game_state("Auto")
-                    else:
+                    elif auto_key == 4:
                         reset_game_state()
 
         if not auto_mode:
