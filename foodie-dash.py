@@ -5,8 +5,17 @@ import random
 import shutil
 from sys import exit
 
+version_num = 1
+
 app_folder = os.path.join(os.environ['APPDATA'].replace("\\", "/"), "Foodie Dash")
 resources_folder = os.path.join(app_folder, "Resources")
+
+icon_path = f"{resources_folder}/icon.png"
+berry_path = f"{resources_folder}/berry.png"
+death_path = f"{resources_folder}/death.mp3"
+eat_path = f"{resources_folder}/eat.mp3"
+music_path = f"{resources_folder}/music.mp3"
+font_path = f"{resources_folder}/font.ttf"
 
 if not os.path.exists(app_folder):
     os.mkdir(app_folder)
@@ -14,28 +23,28 @@ if not os.path.exists(app_folder):
 if not os.path.exists(resources_folder):
     os.mkdir(resources_folder)
 
-if not os.path.exists(f"{resources_folder}/icon.png"):
-    with open(f"{resources_folder}/icon.png", 'wb') as f:
+if not os.path.exists(icon_path):
+    with open(icon_path, 'wb') as f:
         f.write(requests.get("https://cdn.lncvrt.xyz/foodiedash/icon.png").content)
 
-if not os.path.exists(f"{resources_folder}/berry.png"):
-    with open(f"{resources_folder}/berry.png", 'wb') as f:
+if not os.path.exists(berry_path):
+    with open(berry_path, 'wb') as f:
         f.write(requests.get("https://cdn.lncvrt.xyz/foodiedash/berry.png").content)
 
-if not os.path.exists(f"{resources_folder}/death.mp3"):
-    with open(f"{resources_folder}/death.mp3", 'wb') as f:
+if not os.path.exists(death_path):
+    with open(death_path, 'wb') as f:
         f.write(requests.get("https://cdn.lncvrt.xyz/foodiedash/death.mp3").content)
 
-if not os.path.exists(f"{resources_folder}/eat.mp3"):
-    with open(f"{resources_folder}/eat.mp3", 'wb') as f:
+if not os.path.exists(eat_path):
+    with open(eat_path, 'wb') as f:
         f.write(requests.get("https://cdn.lncvrt.xyz/foodiedash/eat.mp3").content)
 
-if not os.path.exists(f"{resources_folder}/music.mp3"):
-    with open(f"{resources_folder}/music.mp3", 'wb') as f:
+if not os.path.exists(music_path):
+    with open(music_path, 'wb') as f:
         f.write(requests.get("https://cdn.lncvrt.xyz/foodiedash/music.mp3").content)
 
-if not os.path.exists(f"{resources_folder}/font.ttf"):
-    with open(f"{resources_folder}/font.ttf", 'wb') as f:
+if not os.path.exists(font_path):
+    with open(font_path, 'wb') as f:
         f.write(requests.get("https://cdn.lncvrt.xyz/foodiedash/font.ttf").content)
 
 pygame.init()
@@ -59,14 +68,16 @@ player_hitbox_height = 128
 food_hitbox_width = 128
 food_hitbox_height = 128
 
+icon_image = pygame.image.load(icon_path)
+
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Foodie Dash")
-pygame.display.set_icon(pygame.image.load(f"{resources_folder}/icon.png"))
+pygame.display.set_icon(icon_image)
 
-player_image = pygame.image.load(f"{resources_folder}/icon.png").convert_alpha()
+player_image = icon_image.convert_alpha()
 player_image = pygame.transform.scale(player_image, (player_width, player_height))
 
-food_image = pygame.image.load(f"{resources_folder}/berry.png").convert_alpha()
+food_image = pygame.image.load(berry_path).convert_alpha()
 food_image = pygame.transform.scale(food_image, (food_width, food_height))
 
 player_x = (WIDTH - player_width) // 2
@@ -83,11 +94,10 @@ auto_key = 0
 auto_color_change_interval = 100
 auto_color_change_timer = pygame.time.get_ticks()
 
-
-font = pygame.font.Font(f'{resources_folder}/font.ttf', 36)
+font = pygame.font.Font(font_path, 36)
 clock = pygame.time.Clock()
 
-pygame.mixer.music.load(f"{resources_folder}/music.mp3")
+pygame.mixer.music.load(music_path)
 pygame.mixer.music.play(loops=-1)
 
 death_sound_channel = pygame.mixer.Channel(1)
@@ -189,7 +199,6 @@ def game_loop():
         elif player_x > WIDTH - player_width:
             player_x = WIDTH - player_width
 
-
         food_y += food_speed * dt
         if auto_mode == True:
             if abs(player_x - food_x) > player_speed * dt:
@@ -208,11 +217,11 @@ def game_loop():
             if check_collision():
                 if not auto_mode:
                     score += 1
-                    pygame.mixer.Sound(f"{resources_folder}/eat.mp3").play().set_volume(0.15)
+                    pygame.mixer.Sound(eat_path).play().set_volume(0.15)
                 food_x = random.randint(0, WIDTH - food_width)
                 food_y = 0
             else:
-                pygame.mixer.Sound(f"{resources_folder}/death.mp3").play().set_volume(0.4)
+                pygame.mixer.Sound(death_path).play().set_volume(0.4)
                 score = 1
                 player_x = (WIDTH - player_width) // 2
                 food_x = random.randint(0, WIDTH - food_width)
@@ -223,5 +232,5 @@ def game_loop():
 
         COLORraw_window()
 
-
-game_loop()
+if __name__ == "__main__":
+    game_loop()
