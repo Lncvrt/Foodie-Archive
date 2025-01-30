@@ -142,6 +142,7 @@ def game_loop():
                     if auto_key == 3:
                         reset_game_state("Auto")
                     elif auto_key == 4:
+                        auto_key = 0
                         reset_game_state()
 
         if not auto_mode:
