@@ -96,7 +96,7 @@ def COLORraw_window():
     global red, green, blue, gradient_progress
     window.fill((30, 30, 30))
 
-    if draw_hitboxes and not auto_mode:
+    if draw_hitboxes:
         pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_hitbox_width, player_hitbox_height), 2)
         pygame.draw.rect(window, (0, 255, 0), (food_x, food_y, food_hitbox_width, food_hitbox_height), 2)
 
