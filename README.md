@@ -1,7 +1,7 @@
 ![Foodie Dash](https://cdn.lncvrt.xyz/foodiedash/icon.png)
 
 # Foodie Dash
-### A game where you collect food items with a leaderboard system
+### A game where you collect food items and more
 
 **NOTE:** this is an archive and now a "continued" version of the game  
 The code here is really bad, and has really bad parts. If you want the true 1.0.0/non updating version, [go here](https://github.com/Lncvrt/Foodie-Archive/releases/tag/true-1.0.0)
